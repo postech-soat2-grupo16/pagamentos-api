@@ -2,8 +2,18 @@ package pedido
 
 import (
 	"time"
+)
 
-	"github.com/joaocampari/postech-soat2-grupo16/entities"
+const (
+	// Status of pedidos
+	StatusPedidoCriado       = "CRIADO"
+	StatusPedidoRecebido     = "RECEBIDO"
+	StatusPedidoEmPreparacao = "EM_PREPARACAO"
+	StatusPedidoPronto       = "PRONTO"
+	StatusPedidoEntregue     = "ENTREGUE"
+	StatusPedidoFinalizado   = "FINALIZADO"
+	StatusPagamentoAprovado  = "APROVADO"
+	StatusPagamentoNegado    = "NEGADO"
 )
 
 type Pedido struct {
@@ -15,8 +25,10 @@ type Pedido struct {
 }
 
 type Item struct {
-	ItemID   uint32 `json:"itemId"`
-	Quantity int    `json:"quantity"`
+	ItemID   uint32  `json:"itemId"`
+	Name     string  `json:"name"`
+	Price    float64 `json:"price"`
+	Quantity int     `json:"quantity"`
 }
 
 type QRCode struct {
@@ -31,33 +43,6 @@ type Pagamento struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (p *Pedido) PedidoItemToDomain() (list []entities.PedidoItem) {
-	for _, pi := range p.Items {
-		list = append(list, entities.PedidoItem{
-			PedidoID: p.ID,
-			ItemID:   pi.ItemID,
-			Item: entities.Item{
-				ID: pi.ItemID,
-			},
-			Quantity: pi.Quantity,
-		})
-	}
-	return list
-}
-
-func (p *Pedido) ToDomain() entities.Pedido {
-	return entities.Pedido{
-		ID:        p.ID,
-		Items:     p.PedidoItemToDomain(),
-		Status:    entities.StatusPedidoCriado,
-		Notes:     p.Notes,
-		ClienteID: p.ClienteID,
-		Cliente: entities.Cliente{
-			ID: p.ClienteID,
-		},
-	}
-}
-
 type PaymentCallback struct {
 	Id          int       `json:"id"`
 	LiveMode    bool      `json:"live_mode"`
@@ -69,4 +54,12 @@ type PaymentCallback struct {
 	Data        struct {
 		ID string `json:"id"`
 	} `json:"data"`
+}
+
+func (p *Pedido) GetAmount() float64 {
+	var amount float64
+	for _, item := range p.Items {
+		amount += float64(item.Price) * float64(item.Quantity)
+	}
+	return amount
 }

@@ -10,7 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//	@title			Fast Food API
+//	@title			Payments API
 //	@version		1.0
 //	@description	Here you will find everything you need to have the best possible integration with our APIs.
 //	@termsOfService	http://fastfood.io/terms/

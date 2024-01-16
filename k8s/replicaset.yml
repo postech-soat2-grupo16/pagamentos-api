@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: fastfood_app-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fastfood_app
+  template:
+    metadata:
+      labels:
+        app: fastfood_app
+    spec:
+      containers:
+        - name: fastfood_app
+          image: joaocampari/postech-soat2-grupo16:1.0.0
+          ports:
+            - containerPort: 8000

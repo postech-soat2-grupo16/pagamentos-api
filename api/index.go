@@ -6,20 +6,22 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/joaocampari/postech-soat2-grupo16/controllers"
 	"github.com/joaocampari/postech-soat2-grupo16/external"
-	"github.com/joaocampari/postech-soat2-grupo16/gateways/api"
-	clientegateway "github.com/joaocampari/postech-soat2-grupo16/gateways/db/cliente"
-	itemgateway "github.com/joaocampari/postech-soat2-grupo16/gateways/db/item"
-	pedidogateway "github.com/joaocampari/postech-soat2-grupo16/gateways/db/pedido"
-	"github.com/joaocampari/postech-soat2-grupo16/usecases/cliente"
-	"github.com/joaocampari/postech-soat2-grupo16/usecases/item"
-	"github.com/joaocampari/postech-soat2-grupo16/usecases/pedido"
+	apimercadopago "github.com/joaocampari/postech-soat2-grupo16/gateways/api/mercadopago"
+	apipedido "github.com/joaocampari/postech-soat2-grupo16/gateways/api/pedido"
+	apiqueue "github.com/joaocampari/postech-soat2-grupo16/gateways/api/queue"
+	pagamentogateway "github.com/joaocampari/postech-soat2-grupo16/gateways/db/pagamento"
+	"github.com/joaocampari/postech-soat2-grupo16/usecases/pagamento"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/gorm"
 )
 
 const (
 	// This is only a test token, not a real one and will be removed in the future replacing by a secret service.
-	authToken = "TEST-8788837371574102-082018-c29a1c5da797dbf70a8c99b842da2850-144255706"
+	authToken     = "TEST-8788837371574102-082018-c29a1c5da797dbf70a8c99b842da2850-144255706"
+	awsAccessKey  = "xxx"
+	awsSecretKey  = "xxx"
+	awsRegion     = "us-east-1"
+	apiPedidosURL = "http://localhost:8080/pedido"
 )
 
 func SetupDB() *gorm.DB {
@@ -44,18 +46,14 @@ func mapRoutes(r *chi.Mux, orm *gorm.DB) {
 
 	// Injections
 	// Gateways
-	pedidoGateway := pedidogateway.NewGateway(orm)
-	clienteGateway := clientegateway.NewGateway(orm)
-	itemGateway := itemgateway.NewGateway(orm)
-	mercadoPagoGateway := api.NewGateway(authToken)
+	mercadoPagoGateway := apimercadopago.NewGateway(authToken)
+	queueGateway := apiqueue.NewGateway(awsAccessKey, awsSecretKey, awsRegion)
+	pedidosApiGateway := apipedido.NewGateway(apiPedidosURL)
+	pagamentoGateway := pagamentogateway.NewGateway(orm)
 	// Use cases
-	itemUseCase := item.NewUseCase(itemGateway)
-	pedidoUseCase := pedido.NewUseCase(pedidoGateway, mercadoPagoGateway)
-	clienteUseCase := cliente.NewUseCase(clienteGateway)
+	pagamentoUseCase := pagamento.NewUseCase(pagamentoGateway, mercadoPagoGateway, queueGateway, pedidosApiGateway)
 	// Handlers
-	_ = controllers.NewItemController(itemUseCase, r)
-	_ = controllers.NewPedidoController(pedidoUseCase, r)
-	_ = controllers.NewClienteController(clienteUseCase, r)
+	_ = controllers.NewPagamentoController(pagamentoUseCase, r)
 }
 
 func commonMiddleware(next http.Handler) http.Handler {

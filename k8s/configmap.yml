@@ -1,0 +1,9 @@
+apiVersion: 1
+king: ConfigMap
+metadata:
+  name: configmap-fastfood_db
+data:
+  DATABASE_URL: postgres://postgres:postgres@svc-clusterip-fastfood_db:5432/fastfood_db
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: fastfood_db

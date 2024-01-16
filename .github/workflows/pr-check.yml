@@ -36,7 +36,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: fastfood_db
+          POSTGRES_DB: payments_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

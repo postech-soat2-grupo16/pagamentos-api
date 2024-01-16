@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/pedido"
 	"time"
 
 	"golang.org/x/exp/slices"
@@ -16,6 +17,6 @@ type Pagamento struct {
 }
 
 func (p *Pagamento) IsStatusValid() bool {
-	status := []string{StatusPagamentoAprovado, StatusPagamentoNegado}
+	status := []string{pedido.StatusPagamentoAprovado, pedido.StatusPagamentoNegado}
 	return slices.Contains(status, p.Status)
 }

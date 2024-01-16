@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 }
 
 func setup() *http.Server {
-	os.Setenv("DATABASE_URL", "host=localhost user=postgres password=postgres dbname=fastfood_db sslmode=disable TimeZone=UTC")
+	os.Setenv("DATABASE_URL", "host=localhost user=postgres password=postgres dbname=payments_db sslmode=disable TimeZone=UTC")
 	db := api.SetupDB()
 	r := api.SetupRouter(db)
 

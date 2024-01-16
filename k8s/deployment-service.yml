@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-nodeport-fastfood_app-replica
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      nodePort: 8001
+  selector:
+    app: fastfood_app-deployment

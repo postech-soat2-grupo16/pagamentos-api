@@ -1,13 +1,12 @@
-package api
+package mercadopago
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/pedido"
 	"net/http"
 	"strconv"
-
-	"github.com/joaocampari/postech-soat2-grupo16/entities"
 )
 
 const (
@@ -57,18 +56,18 @@ func (m *MercadoPagoAPIRepository) GetPedidoIDByPaymentID(paymentID string) (uin
 	return uint32(pedidoID), err
 }
 
-func (m *MercadoPagoAPIRepository) CreateQRCodeForPedido(pedido entities.Pedido) (string, error) {
+func (m *MercadoPagoAPIRepository) CreateQRCodeForPedido(pedido pedido.Pedido) (string, error) {
 	url := createQRCodeURL
 
 	var items []Item
 	for _, item := range pedido.Items {
 		items = append(items, Item{
-			Title:       item.Item.Name,
+			Title:       item.Name,
 			CurrencyID:  currencyID,
-			UnitPrice:   int(item.Item.Price),
+			UnitPrice:   int(item.Price),
 			Quantity:    item.Quantity,
 			UnitMeasure: unitMeasure,
-			TotalAmount: int(item.Item.Price) * item.Quantity,
+			TotalAmount: int(item.Price) * item.Quantity,
 		})
 	}
 

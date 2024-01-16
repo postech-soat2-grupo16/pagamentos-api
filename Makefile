@@ -1,7 +1,7 @@
 POD_LABEL_SELECTOR = app=postgres
 LOCAL_SQL_FILE = ./migration/init/init.sql
 SEED_SQL_FILE = ./migration/seeds/seeds.sql
-DB_URL = postgresql://postgres:postgres@localhost:5432/fastfood_db?sslmode=disable
+DB_URL = postgresql://postgres:postgres@localhost:5432/payments_db?sslmode=disable
 
 .PHONY: help
 help: ## Display this help
@@ -9,11 +9,11 @@ help: ## Display this help
 
 .PHONY: db-run
 db-run: ## Run the database container
-	@docker-compose up -d fastfood_db
+	@docker-compose up -d payments_db
 
 .PHONY: app-run
 app-run: ## Run the application container
-	@docker-compose up -d fastfood_app
+	@docker-compose up -d payments_app
 
 .PHONY: build-all
 build-all: ## Build docker images
@@ -29,7 +29,7 @@ kill-all: ## Run all containers
 
 .PHONY: db-reset
 db-reset: ## Reset table registers to initial state (with seeds)
-	@docker exec -u postgres fastfood_db psql fastfood_db postgres -f /migration/seeds/seeds.sql
+	@docker exec -u postgres payments_db psql payments_db postgres -f /migration/seeds/seeds.sql
 
 .PHONY: test
 test: db-reset ## Execute the tests in the development environment
@@ -44,11 +44,11 @@ ci: lint test ## Execute the tests and lint commands
 
 .PHONY: db-logs
 db-logs: ## Show database logs
-	@docker logs -f --tail 100 fastfood_db
+	@docker logs -f --tail 100 payments_db
 
 .PHONY: app-logs
 app-logs: ## Show application logs
-	@docker logs -f --tail 100 fastfood_app
+	@docker logs -f --tail 100 payments_app
 
 .PHONY: update-docs
 update-docs: ## Update swagger docs
@@ -65,12 +65,12 @@ get-pod:
 .PHONY: migrate-k8s
 migrate-k8s:
 	@POD_NAME=$$(kubectl get pods -l $(POD_LABEL_SELECTOR) -o jsonpath='{.items[0].metadata.name}'); \
-    cat $(LOCAL_SQL_FILE) | kubectl exec -i $$POD_NAME -- /bin/bash -c "psql -U postgres -d fastfood_db"
+    cat $(LOCAL_SQL_FILE) | kubectl exec -i $$POD_NAME -- /bin/bash -c "psql -U postgres -d payments_db"
 
 .PHONY: seeds-k8s
 seeds-k8s:
 	@POD_NAME=$$(kubectl get pods -l $(POD_LABEL_SELECTOR) -o jsonpath='{.items[0].metadata.name}'); \
-    cat $(SEED_SQL_FILE) | kubectl exec -i $$POD_NAME -- /bin/bash -c "psql -U postgres -d fastfood_db"
+    cat $(SEED_SQL_FILE) | kubectl exec -i $$POD_NAME -- /bin/bash -c "psql -U postgres -d payments_db"
 
 .PHONY: migrate-up
 migrate-up: ## Execute the database schema and seeds
