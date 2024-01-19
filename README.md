@@ -28,3 +28,5 @@ Após isso, basta executar o comando `make test`, que fará com que a base de da
 Este projeto conta com Swagger para especificação e documentação da API. Para visualizar, basta executar localmente o projeto, como indicado na seção [Como Executar](#como-executar). E então acessar o link abaixo:
 
 `http://localhost:8000/swagger/index.html`
+
+![img.png](img.png)

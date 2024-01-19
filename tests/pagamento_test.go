@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/joaocampari/postech-soat2-grupo16/adapters/pedido"
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
 )
 
@@ -63,18 +63,18 @@ func TestGetPedidos(t *testing.T) {
 
 func TestSavePedidos(t *testing.T) {
 	t.Run("given_valid_pedido_should_create_new_pedido", func(t *testing.T) {
-		newOrder := pedido.Pedido{
-			Items:     []pedido.Item{{ItemID: 1, Quantity: 2}, {ItemID: 2, Quantity: 3}},
-			Notes:     "Novo pedido",
+		newOrder := pagamento.Pedido{
+			Items:     []pagamento.Item{{ItemID: 1, Quantity: 2}, {ItemID: 2, Quantity: 3}},
+			Notes:     "Novo pagamento",
 			ClienteID: 1,
 		}
 
 		jsonOrder, err := json.Marshal(newOrder)
 		if err != nil {
-			t.Fatalf("could not marshal pedido: %v", err)
+			t.Fatalf("could not marshal pagamento: %v", err)
 		}
 
-		// Cria uma requisição POST com o JSON do novo pedido no corpo
+		// Cria uma requisição POST com o JSON do novo pagamento no corpo
 		req, err := http.NewRequest("POST", fmt.Sprintf("%s/pedidos", baseURL), bytes.NewBuffer(jsonOrder))
 		if err != nil {
 			t.Fatalf("could not create request: %v", err)
@@ -94,15 +94,15 @@ func TestSavePedidos(t *testing.T) {
 	t.Run("given_nonexisting_pedido_id_should_return_404_when_updating", func(t *testing.T) {
 		newNote := "Pedido atualizado"
 		orderID := 999
-		orderUpdated := pedido.Pedido{
-			Items:     []pedido.Item{{ItemID: 1, Quantity: 5}, {ItemID: 2, Quantity: 3}},
+		orderUpdated := pagamento.Pedido{
+			Items:     []pagamento.Item{{ItemID: 1, Quantity: 5}, {ItemID: 2, Quantity: 3}},
 			ClienteID: 1,
 			Notes:     newNote,
 		}
 
 		jsonOrder, err := json.Marshal(orderUpdated)
 		if err != nil {
-			t.Fatalf("could not marshal pedido: %v", err)
+			t.Fatalf("could not marshal pagamento: %v", err)
 		}
 
 		req, err := http.NewRequest("PUT", fmt.Sprintf("%s/pedidos/%d", baseURL, orderID), bytes.NewBuffer(jsonOrder))

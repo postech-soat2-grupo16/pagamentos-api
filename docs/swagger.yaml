@@ -1,32 +1,5 @@
 definitions:
-  cliente.Cliente:
-    properties:
-      cpf:
-        type: string
-      email:
-        type: string
-      nome:
-        type: string
-    type: object
-  item.Item:
-    properties:
-      category:
-        type: string
-      description:
-        type: string
-      name:
-        type: string
-      price:
-        type: number
-    type: object
-  pedido.Item:
-    properties:
-      itemId:
-        type: integer
-      quantity:
-        type: integer
-    type: object
-  pedido.Pagamento:
+  pagamento.Pagamento:
     properties:
       amount:
         type: number
@@ -39,7 +12,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  pedido.PaymentCallback:
+  pagamento.PaymentCallback:
     properties:
       action:
         type: string
@@ -61,19 +34,9 @@ definitions:
       user_id:
         type: integer
     type: object
-  pedido.Pedido:
+  pagamento.QRCode:
     properties:
-      clienteId:
-        type: integer
-      id:
-        type: integer
-      items:
-        items:
-          $ref: '#/definitions/pedido.Item'
-        type: array
-      notes:
-        type: string
-      status:
+      qr_code:
         type: string
     type: object
 info:
@@ -87,73 +50,14 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://fastfood.io/terms/
-  title: Fast Food API
+  title: Payments API
   version: "1.0"
 paths:
-  /clientes:
+  /pagamentos/{id}:
     get:
-      operationId: get-all-clients
+      operationId: get-payment-by-id
       parameters:
-      - description: Optional Filter by CPF
-        in: query
-        name: cpf
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/cliente.Cliente'
-        "500":
-          description: Internal Server Error
-      summary: Get all clients
-      tags:
-      - Clients
-    post:
-      operationId: create-client
-      parameters:
-      - description: Client data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/cliente.Cliente'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/cliente.Cliente'
-        "400":
-          description: Bad Request
-      summary: New client
-      tags:
-      - Clients
-  /clientes/{id}:
-    delete:
-      operationId: delete-client-by-id
-      parameters:
-      - description: Client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "500":
-          description: Internal Server Error
-      summary: Delete a client by ID
-      tags:
-      - Clients
-    get:
-      operationId: get-client-by-id
-      parameters:
-      - description: Client ID
+      - description: Payment ID
         in: path
         name: id
         required: true
@@ -164,306 +68,13 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/cliente.Cliente'
+            $ref: '#/definitions/pagamento.Pagamento'
         "404":
           description: Not Found
-      summary: Get a client by ID
+      summary: Get payment by ID
       tags:
-      - Clients
-    put:
-      operationId: update-client
-      parameters:
-      - description: Client ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Client data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/cliente.Cliente'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/cliente.Cliente'
-        "400":
-          description: Bad Request
-        "404":
-          description: Not Found
-      summary: Update a client
-      tags:
-      - Clients
-  /items:
-    get:
-      operationId: get-all-items
-      parameters:
-      - description: category search by category
-        in: query
-        name: category
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/item.Item'
-        "500":
-          description: Internal Server Error
-      summary: Get all items
-      tags:
-      - Items
-    post:
-      operationId: create-item
-      parameters:
-      - description: Item data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/item.Item'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/item.Item'
-        "400":
-          description: Bad Request
-      summary: New item
-      tags:
-      - Items
-  /items/{id}:
-    delete:
-      operationId: delete-item-by-id
-      parameters:
-      - description: Item ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "500":
-          description: Internal Server Error
-      summary: Delete a item by ID
-      tags:
-      - Items
-    get:
-      operationId: get-item-by-id
-      parameters:
-      - description: Item ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/item.Item'
-        "404":
-          description: Not Found
-      summary: Get a item by ID
-      tags:
-      - Items
-    put:
-      operationId: update-item
-      parameters:
-      - description: Item ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Item data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/item.Item'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/item.Item'
-        "400":
-          description: Bad Request
-        "404":
-          description: Not Found
-      summary: Update a item
-      tags:
-      - Items
-  /pedidos:
-    get:
-      operationId: get-all-orders
-      parameters:
-      - description: Optional Filter by Status
-        in: query
-        name: status
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/pedido.Pedido'
-        "500":
-          description: Internal Server Error
-      summary: Get all orders
-      tags:
-      - Orders
-    post:
-      operationId: create-order
-      parameters:
-      - description: Order data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/pedido.Pedido'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/pedido.Pedido'
-        "400":
-          description: Bad Request
-      summary: New order
-      tags:
-      - Orders
-  /pedidos/{id}:
-    delete:
-      operationId: delete-order-by-id
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "500":
-          description: Internal Server Error
-      summary: Delete a order by ID
-      tags:
-      - Orders
-    get:
-      operationId: get-order-by-id
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/pedido.Pedido'
-        "404":
-          description: Not Found
-      summary: Get a order by ID
-      tags:
-      - Orders
-    patch:
-      operationId: update-status-order
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Pedido with updated status
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/pedido.Pedido'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/pedido.Pedido'
-        "400":
-          description: Bad Request
-        "404":
-          description: Not Found
-      summary: Patch status of a order
-      tags:
-      - Orders
-    put:
-      operationId: update-order
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Order data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/pedido.Pedido'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/pedido.Pedido'
-        "400":
-          description: Bad Request
-        "404":
-          description: Not Found
-      summary: Update a order
-      tags:
-      - Orders
-  /pedidos/{id}/pagamentos/status:
-    get:
-      operationId: get-payment-by-order-id
-      parameters:
-      - description: Order ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/pedido.Pagamento'
-        "404":
-          description: Not Found
-      summary: Get payment status by order ID
-      tags:
-      - Orders
-  /pedidos/{id}/qr-code:
+      - Payments
+  /pagamentos/{id}/qr-code:
     get:
       operationId: get-qr-code-by-id
       parameters:
@@ -478,13 +89,26 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pedido.Pedido'
+            $ref: '#/definitions/pagamento.QRCode'
         "404":
           description: Not Found
-      summary: Get QR Code pedido
+      summary: Get QR Code pagamento
       tags:
-      - Orders
-  /pedidos/mp-webhook:
+      - Payments
+  /pagamentos/health:
+    get:
+      operationId: health-check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Health check
+      tags:
+      - Payments
+  /pagamentos/mp-webhook:
     post:
       operationId: receive-callback
       parameters:
@@ -493,17 +117,17 @@ paths:
         name: data
         required: true
         schema:
-          $ref: '#/definitions/pedido.PaymentCallback'
+          $ref: '#/definitions/pagamento.PaymentCallback'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/pedido.Pedido'
+            $ref: '#/definitions/pagamento.Pagamento'
         "400":
           description: Bad Request
       summary: Receive payment callback from MercadoPago
       tags:
-      - Orders
+      - Payments
 swagger: "2.0"

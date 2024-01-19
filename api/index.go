@@ -21,7 +21,7 @@ const (
 	awsAccessKey  = "xxx"
 	awsSecretKey  = "xxx"
 	awsRegion     = "us-east-1"
-	apiPedidosURL = "http://localhost:8080/pedido"
+	apiPedidosURL = "https://dk3sau3iu3.execute-api.us-east-1.amazonaws.com"
 )
 
 func SetupDB() *gorm.DB {

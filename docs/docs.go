@@ -25,404 +25,33 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/clientes": {
+        "/pagamentos/health": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Clients"
+                    "Payments"
                 ],
-                "summary": "Get all clients",
-                "operationId": "get-all-clients",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Optional Filter by CPF",
-                        "name": "cpf",
-                        "in": "query"
-                    }
-                ],
+                "summary": "Health check",
+                "operationId": "health-check",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/cliente.Cliente"
+                            "type": "string"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
                     }
                 }
-            },
+            }
+        },
+        "/pagamentos/mp-webhook": {
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Clients"
-                ],
-                "summary": "New client",
-                "operationId": "create-client",
-                "parameters": [
-                    {
-                        "description": "Client data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/cliente.Cliente"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/cliente.Cliente"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                }
-            }
-        },
-        "/clientes/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Clients"
-                ],
-                "summary": "Get a client by ID",
-                "operationId": "get-client-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Client ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/cliente.Cliente"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Clients"
-                ],
-                "summary": "Update a client",
-                "operationId": "update-client",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Client ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Client data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/cliente.Cliente"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/cliente.Cliente"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Clients"
-                ],
-                "summary": "Delete a client by ID",
-                "operationId": "delete-client-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Client ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/items": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Get all items",
-                "operationId": "get-all-items",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "category search by category",
-                        "name": "category",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/item.Item"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Items"
-                ],
-                "summary": "New item",
-                "operationId": "create-item",
-                "parameters": [
-                    {
-                        "description": "Item data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.Item"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/item.Item"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                }
-            }
-        },
-        "/items/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Get a item by ID",
-                "operationId": "get-item-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/item.Item"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Update a item",
-                "operationId": "update-item",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Item data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.Item"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/item.Item"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Delete a item by ID",
-                "operationId": "delete-item-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/pedidos": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Get all orders",
-                "operationId": "get-all-orders",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Optional Filter by Status",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "New order",
-                "operationId": "create-order",
-                "parameters": [
-                    {
-                        "description": "Order data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    }
-                }
-            }
-        },
-        "/pedidos/mp-webhook": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
+                    "Payments"
                 ],
                 "summary": "Receive payment callback from MercadoPago",
                 "operationId": "receive-callback",
@@ -433,7 +62,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/pedido.PaymentCallback"
+                            "$ref": "#/definitions/pagamento.PaymentCallback"
                         }
                     }
                 ],
@@ -441,7 +70,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
+                            "$ref": "#/definitions/pagamento.Pagamento"
                         }
                     },
                     "400": {
@@ -450,20 +79,20 @@ const docTemplate = `{
                 }
             }
         },
-        "/pedidos/{id}": {
+        "/pagamentos/{id}": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Orders"
+                    "Payments"
                 ],
-                "summary": "Get a order by ID",
-                "operationId": "get-order-by-id",
+                "summary": "Get payment by ID",
+                "operationId": "get-payment-by-id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Order ID",
+                        "description": "Payment ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -473,150 +102,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Update a order",
-                "operationId": "update-order",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Order data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            },
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Delete a order by ID",
-                "operationId": "delete-order-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            },
-            "patch": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Patch status of a order",
-                "operationId": "update-status-order",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Pedido with updated status",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "404": {
-                        "description": "Not Found"
-                    }
-                }
-            }
-        },
-        "/pedidos/{id}/pagamentos/status": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Orders"
-                ],
-                "summary": "Get payment status by order ID",
-                "operationId": "get-payment-by-order-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Order ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/pedido.Pagamento"
+                            "$ref": "#/definitions/pagamento.Pagamento"
                         }
                     },
                     "404": {
@@ -625,15 +111,15 @@ const docTemplate = `{
                 }
             }
         },
-        "/pedidos/{id}/qr-code": {
+        "/pagamentos/{id}/qr-code": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Orders"
+                    "Payments"
                 ],
-                "summary": "Get QR Code pedido",
+                "summary": "Get QR Code pagamento",
                 "operationId": "get-qr-code-by-id",
                 "parameters": [
                     {
@@ -648,7 +134,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/pedido.Pedido"
+                            "$ref": "#/definitions/pagamento.QRCode"
                         }
                     },
                     "404": {
@@ -659,49 +145,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "cliente.Cliente": {
-            "type": "object",
-            "properties": {
-                "cpf": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "nome": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.Item": {
-            "type": "object",
-            "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "number"
-                }
-            }
-        },
-        "pedido.Item": {
-            "type": "object",
-            "properties": {
-                "itemId": {
-                    "type": "integer"
-                },
-                "quantity": {
-                    "type": "integer"
-                }
-            }
-        },
-        "pedido.Pagamento": {
+        "pagamento.Pagamento": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -721,7 +165,7 @@ const docTemplate = `{
                 }
             }
         },
-        "pedido.PaymentCallback": {
+        "pagamento.PaymentCallback": {
             "type": "object",
             "properties": {
                 "action": {
@@ -755,25 +199,10 @@ const docTemplate = `{
                 }
             }
         },
-        "pedido.Pedido": {
+        "pagamento.QRCode": {
             "type": "object",
             "properties": {
-                "clienteId": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/pedido.Item"
-                    }
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "status": {
+                "qr_code": {
                     "type": "string"
                 }
             }
@@ -787,7 +216,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Fast Food API",
+	Title:            "Payments API",
 	Description:      "Here you will find everything you need to have the best possible integration with our APIs.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

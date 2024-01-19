@@ -1,10 +1,7 @@
 package pedido
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/joaocampari/postech-soat2-grupo16/adapters/pedido"
-	"net/http"
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 )
 
 type PedidosAPIRepository struct {
@@ -17,10 +14,10 @@ func NewGateway(apiURL string) *PedidosAPIRepository {
 	}
 }
 
-func (p *PedidosAPIRepository) GetByID(pedidoID uint32) (*pedido.Pedido, error) {
-	apiURL := fmt.Sprintf("%s%s%s", p.ApiURL, "/pedidos/", pedidoID)
+func (p *PedidosAPIRepository) GetByID(pedidoID uint32) (*pagamento.Pedido, error) {
+	/*url := fmt.Sprintf("/%s%s%s", p.ApiURL, "/pedidos/", strconv.Itoa(int(pedidoID)))
 
-	resp, err := http.Get(apiURL)
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao fazer requisição HTTP: %v", err)
 	}
@@ -30,10 +27,21 @@ func (p *PedidosAPIRepository) GetByID(pedidoID uint32) (*pedido.Pedido, error) 
 		return nil, fmt.Errorf("erro na resposta da API: %s", resp.Status)
 	}
 
-	var pedidoResponse pedido.Pedido
+	var pedidoResponse pagamento.Pedido
 	err = json.NewDecoder(resp.Body).Decode(&pedidoResponse)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao decodificar resposta JSON: %v", err)
+	}*/
+	// Objeto pagamento para teste
+	pedidoResponse := pagamento.Pedido{
+		Items: []pagamento.Item{{
+			ItemID:   1,
+			Name:     "teste",
+			Price:    10,
+			Quantity: 2,
+		}},
+		Notes:     "Novo pagamento",
+		ClienteID: 1,
 	}
 
 	return &pedidoResponse, nil

@@ -47,7 +47,7 @@ func (a *APIRepository) Publish(pagamento entities.Pagamento) error {
 	sendMessageOutput, err := sqsClient.SendMessage(&sqs.SendMessageInput{
 		MessageBody:  aws.String(string(jsonBody)),
 		QueueUrl:     &queueURL,
-		DelaySeconds: aws.Int64(0), // 0 segundos de atraso (opcional)
+		DelaySeconds: aws.Int64(0),
 	})
 	if err != nil {
 		fmt.Println("Erro ao enviar mensagem para a fila:", err)

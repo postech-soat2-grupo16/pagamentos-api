@@ -1,19 +1,14 @@
-package pedido
+package pagamento
 
 import (
 	"time"
 )
 
 const (
-	// Status of pedidos
-	StatusPedidoCriado       = "CRIADO"
-	StatusPedidoRecebido     = "RECEBIDO"
-	StatusPedidoEmPreparacao = "EM_PREPARACAO"
-	StatusPedidoPronto       = "PRONTO"
-	StatusPedidoEntregue     = "ENTREGUE"
-	StatusPedidoFinalizado   = "FINALIZADO"
-	StatusPagamentoAprovado  = "APROVADO"
-	StatusPagamentoNegado    = "NEGADO"
+	// Status do pagamento
+	StatusPagamentoIniciado = "INICIADO"
+	StatusPagamentoAprovado = "APROVADO"
+	StatusPagamentoNegado   = "NEGADO"
 )
 
 type Pedido struct {

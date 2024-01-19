@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/joaocampari/postech-soat2-grupo16/adapters/pedido"
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 	"net/http"
 	"strconv"
 )
@@ -56,7 +56,7 @@ func (m *MercadoPagoAPIRepository) GetPedidoIDByPaymentID(paymentID string) (uin
 	return uint32(pedidoID), err
 }
 
-func (m *MercadoPagoAPIRepository) CreateQRCodeForPedido(pedido pedido.Pedido) (string, error) {
+func (m *MercadoPagoAPIRepository) CreateQRCodeForPedido(pedido pagamento.Pedido) (string, error) {
 	url := createQRCodeURL
 
 	var items []Item
