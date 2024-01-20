@@ -30,3 +30,5 @@ Este projeto conta com Swagger para especificação e documentação da API. Par
 `http://localhost:8000/swagger/index.html`
 
 ![img.png](img.png)
+
+test
