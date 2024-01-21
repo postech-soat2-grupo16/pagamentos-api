@@ -3,74 +3,71 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "aws_az_a" {
-  type    = string
-  default = "us-east-1a"
-}
-
-variable "aws_az_b" {
-  type    = string
-  default = "us-east-1b"
-}
-
 variable "vpc_id" {
   type    = string
-  default = "value"
+  default = "vpc-02704242632eb2597"
 }
 
 variable "subnet_a" {
   type    = string
-  default = "value"
+  default = "subnet-0c485509fe2864438"
 }
 
 variable "subnet_b" {
   type    = string
-  default = "value"
-}
-
-variable "sg_load_balancer" {
-  type    = string
-  default = "value"
+  default = "subnet-000064d84790b3f77"
 }
 
 variable "ecr_image" {
   description = "ECR Image"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "execution_role_ecs" {
   description = "Execution role ECS"
   type        = string
   sensitive   = true
+  default     = ""
 }
 
 variable "desired_tasks" {
   description = "Mininum executing tasks"
-  type    = number
-  default = 1
+  type        = number
+  default     = 1
 }
 
 variable "ecs_cluster" {
   description = "Cluster ECS ARN"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "sg_cluster_ecs" {
   description = "Cluster ECS Security group"
-  type    = string
-  default = "value"
+  type        = string
+  default     = ""
 }
 
-variable "target_group_arn" {
-  description = "Target Group ARN"
-  type      = string
-  sensitive = true
+variable "lb_arn" {
+  description = "Load Balancer ARN"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "alb_fastfood_listener_arn" {
+  description = "Default Listener ALB"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
 variable "db_url" {
-  description = "database url"
-  type = string
-  sensitive = true
+  description = "Pagamentos DB URL"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
