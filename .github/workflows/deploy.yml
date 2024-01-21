@@ -15,12 +15,13 @@ jobs:
         uses: actions/checkout@v4
 
       #AWS CREDENTIALS
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name: myGitHubActions
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -28,13 +29,20 @@ jobs:
         with:
           mask-password: 'false'
 
+      - name: Generate UUID for image
+        id: uuid
+        run: |
+          echo "UUID=$(uuidgen)" >> $GITHUB_ENV
+
       - name: Build, tag, and push image to Amazon ECR
         id: docker_build_tag_push
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: "pagamentos-api-${{ env.UUID }}"
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
+          echo "uuid - ${{ env.UUID }}"
+          cd src
           docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
@@ -44,12 +52,12 @@ jobs:
       #Runs ECS Service
       - name: Terraform Init
         run: |
-          cd terraform
-          terraform init
+          cd infra/terraform
+          terraform init -reconfigure
 
       - name: Terraform Apply
         run: |
-          cd terraform
+          cd infra/terraform
           terraform apply -auto-approve        
         env:
           TF_VAR_ecr_image: ${{ env.ECR_IMAGE }}
@@ -57,8 +65,8 @@ jobs:
           TF_VAR_vpc_id: ${{ vars.VPC_ID }}
           TF_VAR_subnet_a: ${{ vars.SUBNET_A }}
           TF_VAR_subnet_b: ${{ vars.SUBNET_B }}
-          TF_VAR_sg_load_balancer: ${{ vars.SG_LOAD_BALANCER }}
           TF_VAR_ecs_cluster: ${{ vars.ECS_CLUSTER }}
           TF_VAR_sg_cluster_ecs: ${{ vars.SG_CLUSTER_ECS }}
-          TF_VAR_target_group_arn: ${{ vars.TARGET_GROUP_ARN }}
-          TF_VAR_db_url: ${{ secrets.DB_URL }}
+          TF_VAR_lb_arn: ${{ secrets.LB_ARN }}
+          TF_VAR_alb_fastfood_listener_arn: ${{ secrets.LISTENER_DEFAULT_ARN }}
+          TF_VAR_db_url: ${{ secrets.PAGAMENTOS_DB_URL }}
