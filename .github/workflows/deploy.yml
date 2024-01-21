@@ -52,12 +52,12 @@ jobs:
       #Runs ECS Service
       - name: Terraform Init
         run: |
-          cd infra/terraform
+          cd /terraform
           terraform init -reconfigure
 
       - name: Terraform Apply
         run: |
-          cd infra/terraform
+          cd /terraform
           terraform apply -auto-approve        
         env:
           TF_VAR_ecr_image: ${{ env.ECR_IMAGE }}
