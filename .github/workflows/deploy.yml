@@ -42,7 +42,6 @@ jobs:
           REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         run: |
           echo "uuid - ${{ env.UUID }}"
-          cd src
           docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
