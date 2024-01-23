@@ -94,6 +94,7 @@ resource "aws_ecs_task_definition" "task_definition_pagamentos_api" {
 
       environment = [
         { "name" : "DATABASE_URL", "value" : var.db_url }
+        { "name" : "QUEUE_URL", "value" : var.sqs_url }
       ]
 
 
