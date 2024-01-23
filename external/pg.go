@@ -11,6 +11,6 @@ import (
 func GetPostgresDialector() gorm.Dialector {
 	connStr := os.Getenv("DATABASE_URL")
 	pgDialector := postgres.Open(connStr)
-	fmt.Printf("DB connected\n")
+	fmt.Printf("DB connected: %v\n", pgDialector)
 	return pgDialector
 }
