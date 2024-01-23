@@ -21,5 +21,5 @@ type PagamentoGatewayI interface {
 }
 
 type QueueGatewayI interface {
-	Publish(pagamento entities.Pagamento) error
+	SendMessage(pagamento *entities.Pagamento) error
 }

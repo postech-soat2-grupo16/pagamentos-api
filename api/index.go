@@ -1,6 +1,8 @@
 package api
 
 import (
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/joaocampari/postech-soat2-grupo16/gateways/message"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -8,7 +10,6 @@ import (
 	"github.com/joaocampari/postech-soat2-grupo16/external"
 	apimercadopago "github.com/joaocampari/postech-soat2-grupo16/gateways/api/mercadopago"
 	apipedido "github.com/joaocampari/postech-soat2-grupo16/gateways/api/pedido"
-	apiqueue "github.com/joaocampari/postech-soat2-grupo16/gateways/api/queue"
 	pagamentogateway "github.com/joaocampari/postech-soat2-grupo16/gateways/db/pagamento"
 	"github.com/joaocampari/postech-soat2-grupo16/usecases/pagamento"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -31,23 +32,27 @@ func SetupDB() *gorm.DB {
 	return db
 }
 
-func SetupRouter(db *gorm.DB) *chi.Mux {
+func SetupQueue() *sqs.SQS {
+	return external.GetSqsClient()
+}
+
+func SetupRouter(db *gorm.DB, queue *sqs.SQS) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(commonMiddleware)
 
-	mapRoutes(r, db)
+	mapRoutes(r, db, queue)
 
 	return r
 }
 
-func mapRoutes(r *chi.Mux, orm *gorm.DB) {
+func mapRoutes(r *chi.Mux, orm *gorm.DB, queue *sqs.SQS) {
 	// Swagger
 	r.Get("/swagger/*", httpSwagger.Handler())
 
 	// Injections
 	// Gateways
 	mercadoPagoGateway := apimercadopago.NewGateway(authToken)
-	queueGateway := apiqueue.NewGateway(awsAccessKey, awsSecretKey, awsRegion)
+	queueGateway := message.NewGateway(queue)
 	pedidosApiGateway := apipedido.NewGateway(apiPedidosURL)
 	pagamentoGateway := pagamentogateway.NewGateway(orm)
 	// Use cases

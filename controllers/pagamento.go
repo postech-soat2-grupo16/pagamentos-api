@@ -97,11 +97,6 @@ func (c *PagamentoController) PaymentWebhookCreate(w http.ResponseWriter, r *htt
 		return
 	}
 
-	// send message to sqs
-	//c.useCase.SendMessageToQueue(pagamento)
-
-	// chamar endpoint atualizar pedido
-
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(updatedPayment)
 }

@@ -2,6 +2,7 @@ package pagamento
 
 import (
 	"errors"
+	"fmt"
 	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 	"time"
 
@@ -45,17 +46,19 @@ func (p UseCase) CreateQRCode(pedidoID uint32) (*string, error) {
 }
 
 func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.Pagamento, error) {
-	return p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, pagamento.StatusPagamentoAprovado)
-}
-
-func (p UseCase) SendMessageToQueue(pagamento entities.Pagamento) error {
-	err := p.queueGateway.Publish(pagamento)
-
+	var payment, err = p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, pagamento.StatusPagamentoAprovado)
 	if err != nil {
-		return err
+		fmt.Printf("Error updating payment status: %s\n", err)
+		return nil, err
 	}
 
-	return nil
+	err = p.queueGateway.SendMessage(payment)
+	if err != nil {
+		fmt.Printf("Error sending payment message: %s\n", err)
+		return nil, err
+	}
+
+	return payment, nil
 }
 
 func (p UseCase) CreatePayment(pedidoID uint32) (*entities.Pagamento, error) {
