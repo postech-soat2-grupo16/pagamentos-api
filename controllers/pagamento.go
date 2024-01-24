@@ -19,10 +19,10 @@ type PagamentoController struct {
 func NewPagamentoController(useCase interfaces.PagamentoUseCase, r *chi.Mux) *PagamentoController {
 	controller := PagamentoController{useCase: useCase}
 	r.Route("/pagamentos", func(r chi.Router) {
-		r.Get("/{idPedido}/qr-code", controller.GetQRCodeByPedidoID)
-		r.Post("/mp-webhook", controller.PaymentWebhookCreate)
-		r.Get("/{idPagamento}", controller.GetPaymentById)
-		r.Get("/health", controller.Health)
+		r.Get("/{idPedido}/qr-code", controller.GetQRCodeByPedidoID())
+		r.Post("/mp-webhook", controller.PaymentWebhookCreate())
+		r.Get("/{idPagamento}", controller.GetPaymentById())
+		r.Get("/health", controller.Health())
 	})
 	return &controller
 }
@@ -37,31 +37,34 @@ func NewPagamentoController(useCase interfaces.PagamentoUseCase, r *chi.Mux) *Pa
 // @Success	200	{object}	pagamento.QRCode
 // @Failure	404
 // @Router		/pagamentos/{id}/qr-code [get]
-func (c *PagamentoController) GetQRCodeByPedidoID(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "idPedido")
-	id, err := strconv.ParseInt(idStr, 10, 32)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "idPedido")
+		id, err := strconv.ParseInt(idStr, 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
-	_, err = c.useCase.CreatePayment(uint32(id))
-	if err != nil {
-		return
-	}
+		_, err = c.useCase.CreatePayment(uint32(id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-	qrCodeStr, err := c.useCase.CreateQRCode(uint32(id))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		qrCodeStr, err := c.useCase.CreateQRCode(uint32(id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		if qrCodeStr == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		qrCode := pagamento.QRCode{
+			QRCode: *qrCodeStr,
+		}
+		json.NewEncoder(w).Encode(qrCode)
 	}
-	if qrCodeStr == nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-	qrCode := pagamento.QRCode{
-		QRCode: *qrCodeStr,
-	}
-	json.NewEncoder(w).Encode(qrCode)
 }
 
 // @Summary	Receive payment callback from MercadoPago
@@ -74,31 +77,34 @@ func (c *PagamentoController) GetQRCodeByPedidoID(w http.ResponseWriter, r *http
 // @Success	200		{object}	pagamento.Pagamento
 // @Failure	400
 // @Router		/pagamentos/mp-webhook [post]
-func (c *PagamentoController) PaymentWebhookCreate(w http.ResponseWriter, r *http.Request) {
-	var payment pagamento.PaymentCallback
-	err := json.NewDecoder(r.Body).Decode(&payment)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	updatedPayment, err := c.useCase.UpdatePaymentStatusByPaymentID(uint32(payment.Id))
-	if err != nil {
-		if util.IsDomainError(err) {
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			json.NewEncoder(w).Encode(err)
+func (c *PagamentoController) PaymentWebhookCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var payment pagamento.PaymentCallback
+		err := json.NewDecoder(r.Body).Decode(&payment)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if updatedPayment == nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
+
+		updatedPayment, err := c.useCase.UpdatePaymentStatusByPaymentID(uint32(payment.Id))
+		if err != nil {
+			if util.IsDomainError(err) {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				json.NewEncoder(w).Encode(err)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if updatedPayment == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(updatedPayment)
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(updatedPayment)
 }
 
 // @Summary	Get payment by ID
@@ -111,23 +117,26 @@ func (c *PagamentoController) PaymentWebhookCreate(w http.ResponseWriter, r *htt
 // @Success	200	{object}	pagamento.Pagamento
 // @Failure	404
 // @Router		/pagamentos/{id} [get]
-func (c *PagamentoController) GetPaymentById(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "idPagamento")
-	id, err := strconv.ParseInt(idStr, 10, 32)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+func (c *PagamentoController) GetPaymentById() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "idPagamento")
+		id, err := strconv.ParseInt(idStr, 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
-	payment, err := c.useCase.GetByID(uint32(id))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		payment, err := c.useCase.GetByID(uint32(id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if payment == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		json.NewEncoder(w).Encode(payment)
 	}
-	if payment == nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-	json.NewEncoder(w).Encode(payment)
 }
 
 // @Summary	Health check
@@ -138,7 +147,9 @@ func (c *PagamentoController) GetPaymentById(w http.ResponseWriter, r *http.Requ
 // @Produce	json
 // @Success	200	{object}	string
 // @Router		/pagamentos/health [get]
-func (c *PagamentoController) Health(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("OK")
+func (c *PagamentoController) Health() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode("OK")
+	}
 }
