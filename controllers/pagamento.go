@@ -129,6 +129,7 @@ func (c *PagamentoController) GetPaymentById() http.HandlerFunc {
 		payment, err := c.useCase.GetByID(uint32(id))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		if payment == nil {
 			w.WriteHeader(http.StatusNotFound)
