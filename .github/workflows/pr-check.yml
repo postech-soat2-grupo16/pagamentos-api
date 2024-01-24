@@ -65,4 +65,16 @@ jobs:
         run: make migrate-up
 
       - name: Test
-        run: go test -v ./...
+        run: go test -count=1 -coverprofile coverage.out -coverpkg=./... ./...
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarQube Quality Gate check
+        timeout-minutes: 5
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
