@@ -3,21 +3,40 @@ package message
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
-	"os"
 )
+
+type GatewayInterface interface {
+	SendMessage(pagamento *entities.Pagamento) error
+}
 
 type Gateway struct {
 	queueURL string
 	queue    *sqs.SQS
 }
 
-func NewGateway(queueClient *sqs.SQS) *Gateway {
+type GatewayMock struct {
+}
+
+func (g GatewayMock) SendMessage(pagamento *entities.Pagamento) error {
+	return nil
+}
+
+func NewGateway(queueClient *sqs.SQS) GatewayInterface {
+	if queueClient == nil {
+		return NewGatewayMock()
+	}
 	return &Gateway{
 		queueURL: os.Getenv("QUEUE_URL"),
 		queue:    queueClient,
 	}
+}
+
+func NewGatewayMock() *GatewayMock {
+	return &GatewayMock{}
 }
 
 func (g *Gateway) SendMessage(pagamento *entities.Pagamento) error {
