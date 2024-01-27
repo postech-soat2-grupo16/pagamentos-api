@@ -9,7 +9,7 @@ type MockPagamentosUseCase struct {
 	mock.Mock
 }
 
-func (m *MockPagamentosUseCase) CreateQRCode(pedidoID uint32) (*string, error) {
+func (m *MockPagamentosUseCase) CreateQRCode(pedidoID string) (*string, error) {
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -25,7 +25,7 @@ func (m *MockPagamentosUseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint3
 	return args.Get(0).(*entities.Pagamento), args.Error(1)
 }
 
-func (m *MockPagamentosUseCase) CreatePayment(pedidoID uint32) (*entities.Pagamento, error) {
+func (m *MockPagamentosUseCase) CreatePayment(pedidoID string) (*entities.Pagamento, error) {
 	args := m.Called()
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

@@ -39,20 +39,19 @@ func NewPagamentoController(useCase interfaces.PagamentoUseCase, r *chi.Mux) *Pa
 // @Router		/pagamentos/{id}/qr-code [get]
 func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		idStr := chi.URLParam(r, "idPedido")
-		id, err := strconv.ParseInt(idStr, 10, 32)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		id := chi.URLParam(r, "idPedido")
+		if id == "" {
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		_, err = c.useCase.CreatePayment(uint32(id))
+		_, err := c.useCase.CreatePayment(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		qrCodeStr, err := c.useCase.CreateQRCode(uint32(id))
+		qrCodeStr, err := c.useCase.CreateQRCode(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}

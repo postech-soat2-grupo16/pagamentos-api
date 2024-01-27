@@ -78,20 +78,11 @@ func aPaymentID() error {
 	return nil
 }
 
-func aPedidoID() error {
-	inputs.pedidoID = "1"
-	return nil
-}
-
 func theAPIShouldRespondWith(arg1 string) error {
 	return godog.ErrPending
 }
 
 func theAPIShouldRespondWithThePaymentDetails() error {
-	return godog.ErrPending
-}
-
-func theAPIShouldRespondWithAQRCode() error {
 	return godog.ErrPending
 }
 
@@ -110,7 +101,7 @@ func (i *Input) theAPIShouldRespondWithThePaymentDetails() error {
 }
 
 func theHealthEndpointIsAccessed() error {
-	response, err := inputs.sendRequest("GET", "/pagamentos/health", nil)
+	response, err := inputs.sendRequest(http.MethodGet, "/pagamentos/health", nil)
 	if err != nil {
 		return err
 	}
@@ -127,7 +118,7 @@ func thePaymentStatusShouldBeUpdated() error {
 }
 
 func theUserRequestsThePaymentByID() error {
-	response, err := inputs.sendRequest("GET", fmt.Sprintf("/pagamentos/%s", inputs.paymentID), nil)
+	response, err := inputs.sendRequest(http.MethodGet, fmt.Sprintf("/pagamentos/%s", inputs.paymentID), nil)
 	if err != nil {
 		return err
 	}
@@ -139,30 +130,14 @@ func theUserRequestsThePaymentByID() error {
 	return inputs.theAPIShouldRespondWithThePaymentDetails()
 }
 
-func theUserRequestsTheQRCodeForThePedido() error {
-	response, err := inputs.sendRequest("GET", fmt.Sprintf("/pagamentos/%s/qr-code", inputs.pedidoID), nil)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	inputs.statusCode = response.StatusCode
-	inputs.body = response.Body
-
-	return inputs.theAPIShouldRespondWithAQRCode()
-}
-
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^a MercadoPago payment callback$`, aMercadoPagoPaymentCallback)
 	ctx.Step(`^a payment ID$`, aPaymentID)
-	ctx.Step(`^a pedido ID$`, aPedidoID)
 	ctx.Step(`^the API should respond with "([^"]*)"$`, theAPIShouldRespondWith)
-	ctx.Step(`^the API should respond with a QR Code$`, theAPIShouldRespondWithAQRCode)
 	ctx.Step(`^the API should respond with the payment details$`, theAPIShouldRespondWithThePaymentDetails)
 	ctx.Step(`^the health endpoint is accessed$`, theHealthEndpointIsAccessed)
 	ctx.Step(`^the payment status should be updated$`, thePaymentStatusShouldBeUpdated)
 	ctx.Step(`^the user requests the payment by ID$`, theUserRequestsThePaymentByID)
-	ctx.Step(`^the user requests the QR Code for the pedido$`, theUserRequestsTheQRCodeForThePedido)
 }
 
 var inputs Input

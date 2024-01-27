@@ -6,7 +6,7 @@ import (
 )
 
 type PedidoGatewayI interface {
-	GetByID(pedidoID uint32) (*pagamento.Pedido, error)
+	GetByID(pedidoID string) (*pagamento.Pedido, error)
 }
 
 type MercadoPagoGatewayI interface {

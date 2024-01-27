@@ -5,8 +5,8 @@ import (
 )
 
 type PagamentoUseCase interface {
-	CreateQRCode(pedidoID uint32) (*string, error)
+	CreateQRCode(pedidoID string) (*string, error)
 	UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.Pagamento, error)
-	CreatePayment(pedidoID uint32) (*entities.Pagamento, error)
+	CreatePayment(pedidoID string) (*entities.Pagamento, error)
 	GetByID(paymentID uint32) (*entities.Pagamento, error)
 }
