@@ -29,7 +29,7 @@ func NewUseCase(pagamentoGateway interfaces.PagamentoGatewayI,
 }
 
 func (p UseCase) CreateQRCode(pedidoID string) (*string, error) {
-	pedidoResponse, err := p.pedidoGateway.GetByID(pedidoID)
+	_, err := p.pedidoGateway.GetByID(pedidoID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -37,7 +37,8 @@ func (p UseCase) CreateQRCode(pedidoID string) (*string, error) {
 		return nil, err
 	}
 
-	qrCode, err := p.mercadoPagoGateway.CreateQRCodeForPedido(*pedidoResponse)
+	//qrCode, err := p.mercadoPagoGateway.CreateQRCodeForPedido(*pedidoResponse)
+	qrCode := "00020101021226940014BR.GOV.BCB.PIX2572pix-qr.mercadopago.com/instore/o/v2/6c46ee45-795a-4a2c-a594-69e7ae531cdb5204000053039865802BR5910Teste FIAP6009SAO PAULO62070503***6304DB48"
 	if err != nil {
 		return nil, err
 	}
