@@ -19,7 +19,7 @@ import (
 const (
 	// This is only a test token, not a real one and will be removed in the future replacing by a secret service.
 	authToken     = "TEST-8788837371574102-082018-c29a1c5da797dbf70a8c99b842da2850-144255706"
-	apiPedidosURL = "https://dk3sau3iu3.execute-api.us-east-1.amazonaws.com"
+	apiPedidosURL = "http://internal-alb-fastfood-2095004463.us-east-1.elb.amazonaws.com:8000"
 )
 
 func SetupDB() *gorm.DB {

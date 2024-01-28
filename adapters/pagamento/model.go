@@ -12,18 +12,22 @@ const (
 )
 
 type Pedido struct {
-	ID        string `json:"id"`
-	Items     []Item `json:"items"`
-	Notes     string `json:"notes"`
-	ClienteID uint32 `json:"clienteId"`
+	ID        string `json:"order_id"`
+	ClientID  string `json:"client_id"`
 	Status    string `json:"status"`
+	Items     []Item `json:"ordered_items"`
+	Notes     string `json:"notes"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 type Item struct {
-	ItemID   uint32  `json:"itemId"`
-	Name     string  `json:"name"`
-	Price    float64 `json:"price"`
-	Quantity int     `json:"quantity"`
+	ItemID      string  `json:"item_id"`
+	Price       float64 `json:"price"`
+	Quantity    int     `json:"quantity"`
+	Name        string  `json:"name"`
+	Category    string  `json:"category"`
+	Description string  `json:"description"`
 }
 
 type QRCode struct {
