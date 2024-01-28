@@ -12,7 +12,7 @@ const (
 )
 
 type Pedido struct {
-	ID        uint32 `json:"id"`
+	ID        string `json:"id"`
 	Items     []Item `json:"items"`
 	Notes     string `json:"notes"`
 	ClienteID uint32 `json:"clienteId"`

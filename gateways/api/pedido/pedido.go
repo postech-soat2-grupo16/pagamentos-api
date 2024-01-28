@@ -1,7 +1,10 @@
 package pedido
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
+	"net/http"
 )
 
 type PedidosAPIRepository struct {
@@ -14,8 +17,8 @@ func NewGateway(apiURL string) *PedidosAPIRepository {
 	}
 }
 
-func (p *PedidosAPIRepository) GetByID(pedidoID uint32) (*pagamento.Pedido, error) {
-	/*url := fmt.Sprintf("/%s%s%s", p.ApiURL, "/pedidos/", strconv.Itoa(int(pedidoID)))
+func (p *PedidosAPIRepository) GetByID(pedidoID string) (*pagamento.Pedido, error) {
+	url := fmt.Sprintf("%s%s%s", p.ApiURL, "/pedidos/", pedidoID)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -31,17 +34,6 @@ func (p *PedidosAPIRepository) GetByID(pedidoID uint32) (*pagamento.Pedido, erro
 	err = json.NewDecoder(resp.Body).Decode(&pedidoResponse)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao decodificar resposta JSON: %v", err)
-	}*/
-	// Objeto pagamento para teste
-	pedidoResponse := pagamento.Pedido{
-		Items: []pagamento.Item{{
-			ItemID:   1,
-			Name:     "teste",
-			Price:    10,
-			Quantity: 2,
-		}},
-		Notes:     "Novo pagamento",
-		ClienteID: 1,
 	}
 
 	return &pedidoResponse, nil

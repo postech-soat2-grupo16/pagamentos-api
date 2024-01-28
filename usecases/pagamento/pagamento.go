@@ -28,7 +28,7 @@ func NewUseCase(pagamentoGateway interfaces.PagamentoGatewayI,
 		pedidoGateway:      pedidoGateway}
 }
 
-func (p UseCase) CreateQRCode(pedidoID uint32) (*string, error) {
+func (p UseCase) CreateQRCode(pedidoID string) (*string, error) {
 	pedidoResponse, err := p.pedidoGateway.GetByID(pedidoID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -61,7 +61,7 @@ func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.P
 	return payment, nil
 }
 
-func (p UseCase) CreatePayment(pedidoID uint32) (*entities.Pagamento, error) {
+func (p UseCase) CreatePayment(pedidoID string) (*entities.Pagamento, error) {
 	pedido, err := p.pedidoGateway.GetByID(pedidoID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

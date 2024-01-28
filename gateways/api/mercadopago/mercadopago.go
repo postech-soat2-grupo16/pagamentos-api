@@ -72,7 +72,7 @@ func (m *MercadoPagoAPIRepository) CreateQRCodeForPedido(pedido pagamento.Pedido
 	}
 
 	requestBody := RequestBody{
-		ExternalReference: strconv.Itoa(int(pedido.ID)),
+		ExternalReference: pedido.ID,
 		NotificationURL:   callbackURL,
 		Title:             createTitle,
 		Description:       createTitle,

@@ -15,8 +15,7 @@ import (
 )
 
 var (
-	errUsecaseFailure  = errors.New("ErrUsecaseFailed")
-	errUsecaseNotFound = errors.New("ErrUsecaseNotFound")
+	errUsecaseFailure = errors.New("ErrUsecaseFailed")
 )
 
 func TestPagamentoController_GetQRCodeByPedidoID_Error_400(t *testing.T) {
@@ -38,7 +37,7 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreatePayment(t *t
 	useCase.On("CreatePayment").Return(nil, errUsecaseFailure)
 
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/pagamentos/1/qr-code", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/pagamentos/65619d06-f3fb-4726-b9fa-be597efa0417/qr-code", nil)
 
 	c := chi.NewRouter()
 	controllers.NewPagamentoController(useCase, c)
@@ -54,7 +53,7 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreateQRCode(t *te
 	useCase.On("CreateQRCode").Return(nil, errUsecaseFailure)
 
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/pagamentos/1/qr-code", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/pagamentos/65619d06-f3fb-4726-b9fa-be597efa0417/qr-code", nil)
 
 	c := chi.NewRouter()
 	controllers.NewPagamentoController(useCase, c)
@@ -70,7 +69,7 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_404_by_CreateQRCode(t *te
 	useCase.On("CreateQRCode").Return(nil, nil)
 
 	res := httptest.NewRecorder()
-	req, _ := http.NewRequest(http.MethodGet, "/pagamentos/1/qr-code", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/pagamentos/65619d06-f3fb-4726-b9fa-be597efa0417/qr-code", nil)
 
 	c := chi.NewRouter()
 	controllers.NewPagamentoController(useCase, c)
