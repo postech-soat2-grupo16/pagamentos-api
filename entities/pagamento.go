@@ -9,7 +9,7 @@ import (
 
 type Pagamento struct {
 	ID        uint32    `gorm:"primary_key;auto_increment" json:"id"`
-	PedidoID  string    `gorm:"not null" json:"-"`
+	PedidoID  string    `gorm:"not null" json:"pedido_id"`
 	Amount    float64   `gorm:"not null" json:"amount"`
 	Status    string    `gorm:"not null" json:"status"`
 	CreatedAt time.Time `json:"created_at"`
