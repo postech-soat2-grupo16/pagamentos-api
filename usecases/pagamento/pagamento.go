@@ -47,7 +47,14 @@ func (p UseCase) CreateQRCode(pedidoID string) (*string, error) {
 }
 
 func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.Pagamento, error) {
-	var payment, err = p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, pagamento.StatusPagamentoAprovado)
+	oldPayment, err := p.pagamentoGateway.GetByID(pagamentoID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	updatedPayment := oldPayment.CopyPagamentoWithNewValues(pagamento.StatusPagamentoAprovado)
+
+	payment, err := p.pagamentoGateway.Update(updatedPayment)
 	if err != nil {
 		fmt.Printf("Error updating payment status: %s\n", err)
 		return nil, err

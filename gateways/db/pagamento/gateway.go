@@ -14,16 +14,12 @@ func NewGateway(repository *gorm.DB) *Repository {
 	return &Repository{repository: repository}
 }
 
-func (p *Repository) UpdatePaymentStatusByPaymentID(pagamentoID uint32, status string) (*entities.Pagamento, error) {
-	pagamento := entities.Pagamento{
-		ID:     pagamentoID,
-		Status: status,
-	}
-	result := p.repository.Model(&pagamento).Where("id = ?", pagamentoID).Update("status", status)
+func (p *Repository) Update(pagamento entities.Pagamento) (*entities.Pagamento, error) {
+	result := p.repository.Updates(&pagamento)
 	if result.Error != nil {
+		log.Println(result.Error)
 		return nil, result.Error
 	}
-
 	return &pagamento, nil
 }
 

@@ -15,7 +15,7 @@ type MercadoPagoGatewayI interface {
 }
 
 type PagamentoGatewayI interface {
-	UpdatePaymentStatusByPaymentID(pagamentoID uint32, status string) (*entities.Pagamento, error)
+	Update(pagamento entities.Pagamento) (*entities.Pagamento, error)
 	CreatePayment(pagamento entities.Pagamento) (*entities.Pagamento, error)
 	GetByID(paymentID uint32) (*entities.Pagamento, error)
 }

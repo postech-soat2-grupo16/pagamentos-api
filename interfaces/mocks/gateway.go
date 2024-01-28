@@ -9,8 +9,8 @@ type MockPagamentoGateway struct {
 	mock.Mock
 }
 
-func (m *MockPagamentoGateway) UpdatePaymentStatusByPaymentID(pagamentoID uint32, status string) (*entities.Pagamento, error) {
-	args := m.Called(pagamentoID, status)
+func (m *MockPagamentoGateway) Update(pagamento entities.Pagamento) (*entities.Pagamento, error) {
+	args := m.Called(pagamento)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}

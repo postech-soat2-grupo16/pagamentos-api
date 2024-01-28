@@ -20,3 +20,9 @@ func (p *Pagamento) IsStatusValid() bool {
 	status := []string{pagamento.StatusPagamentoAprovado, pagamento.StatusPagamentoNegado}
 	return slices.Contains(status, p.Status)
 }
+
+func (p *Pagamento) CopyPagamentoWithNewValues(status string) Pagamento {
+	return Pagamento{
+		Status: status,
+	}
+}

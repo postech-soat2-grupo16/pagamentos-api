@@ -97,7 +97,7 @@ func TestPagamentoController_PaymentWebhookCreate_Error_400(t *testing.T) {
 func TestPagamentoController_PaymentWebhookCreate_Error_422(t *testing.T) {
 	useCase := new(mocks.MockPagamentosUseCase)
 
-	useCase.On("UpdatePaymentStatusByPaymentID").Return(nil, util.NewErrorDomain("domain"))
+	useCase.On("Update").Return(nil, util.NewErrorDomain("domain"))
 
 	body := `{"id":1,"live_mode":true,"type":"payment","date_created":"2015-03-25T10:04:58.396-04:00","user_id":44444,"api_version":"v1","action":"payment.created","data":{"id":"1"}}`
 	res := httptest.NewRecorder()
@@ -114,7 +114,7 @@ func TestPagamentoController_PaymentWebhookCreate_Error_422(t *testing.T) {
 func TestPagamentoController_PaymentWebhookCreate_Error_500(t *testing.T) {
 	useCase := new(mocks.MockPagamentosUseCase)
 
-	useCase.On("UpdatePaymentStatusByPaymentID").Return(nil, errUsecaseFailure)
+	useCase.On("Update").Return(nil, errUsecaseFailure)
 
 	body := `{"id":1,"live_mode":true,"type":"payment","date_created":"2015-03-25T10:04:58.396-04:00","user_id":44444,"api_version":"v1","action":"payment.created","data":{"id":"1"}}`
 	res := httptest.NewRecorder()
@@ -131,7 +131,7 @@ func TestPagamentoController_PaymentWebhookCreate_Error_500(t *testing.T) {
 func TestPagamentoController_PaymentWebhookCreate_Error_404(t *testing.T) {
 	useCase := new(mocks.MockPagamentosUseCase)
 
-	useCase.On("UpdatePaymentStatusByPaymentID").Return(nil, nil)
+	useCase.On("Update").Return(nil, nil)
 
 	body := `{"id":1,"live_mode":true,"type":"payment","date_created":"2015-03-25T10:04:58.396-04:00","user_id":44444,"api_version":"v1","action":"payment.created","data":{"id":"1"}}`
 	res := httptest.NewRecorder()
