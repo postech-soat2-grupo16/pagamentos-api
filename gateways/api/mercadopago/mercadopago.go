@@ -11,7 +11,7 @@ import (
 
 const (
 	createQRCodeURL = "https://api.mercadopago.com/instore/orders/qr/seller/collectors/144255706/pos/FIAP/qrs"
-	callbackURL     = "http://projetofuturo.com/mp/callback"
+	callbackURL     = "https://dk3sau3iu3.execute-api.us-east-1.amazonaws.com/pagamentos/mp-webhook"
 	createTitle     = "Order created"
 	currencyID      = "BRL"
 	unitMeasure     = "UNIT"

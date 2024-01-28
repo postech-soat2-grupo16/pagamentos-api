@@ -45,7 +45,7 @@ func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
 			return
 		}
 
-		_, err := c.useCase.CreatePayment(id)
+		payment, err := c.useCase.CreatePayment(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -62,6 +62,9 @@ func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
 		qrCode := pagamento.QRCode{
 			QRCode: *qrCodeStr,
 		}
+
+		_, err = c.useCase.UpdatePaymentStatusByPaymentID(payment.ID)
+
 		json.NewEncoder(w).Encode(qrCode)
 	}
 }
