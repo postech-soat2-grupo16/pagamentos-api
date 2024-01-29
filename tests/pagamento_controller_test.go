@@ -2,13 +2,16 @@ package tests
 
 import (
 	"errors"
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 	"github.com/joaocampari/postech-soat2-grupo16/controllers"
+	"github.com/joaocampari/postech-soat2-grupo16/entities"
 	"github.com/joaocampari/postech-soat2-grupo16/interfaces/mocks"
 	"github.com/joaocampari/postech-soat2-grupo16/util"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -48,8 +51,17 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreatePayment(t *t
 }
 
 func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreateQRCode(t *testing.T) {
+	payment := entities.Pagamento{
+		ID:        1321,
+		PedidoID:  "abc",
+		Amount:    100,
+		Status:    pagamento.StatusPagamentoIniciado,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
 	useCase := new(mocks.MockPagamentosUseCase)
-	useCase.On("CreatePayment").Return(nil, nil)
+	useCase.On("CreatePayment").Return(&payment, nil)
 	useCase.On("CreateQRCode").Return(nil, errUsecaseFailure)
 
 	res := httptest.NewRecorder()
@@ -64,8 +76,17 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreateQRCode(t *te
 }
 
 func TestPagamentoController_GetQRCodeByPedidoID_Error_404_by_CreateQRCode(t *testing.T) {
+	payment := entities.Pagamento{
+		ID:        1321,
+		PedidoID:  "abc",
+		Amount:    100,
+		Status:    pagamento.StatusPagamentoIniciado,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
 	useCase := new(mocks.MockPagamentosUseCase)
-	useCase.On("CreatePayment").Return(nil, nil)
+	useCase.On("CreatePayment").Return(&payment, nil)
 	useCase.On("CreateQRCode").Return(nil, nil)
 
 	res := httptest.NewRecorder()

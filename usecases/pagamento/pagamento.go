@@ -53,6 +53,8 @@ func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.P
 		return nil, err
 	}
 
+	fmt.Printf("Callback do pagamento %d, status do pagamento atualizado para %s\n", payment.ID, payment.Status)
+
 	err = p.queueGateway.SendMessage(payment)
 	if err != nil {
 		fmt.Printf("Error sending payment message: %s\n", err)
