@@ -76,8 +76,17 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreateQRCode(t *te
 }
 
 func TestPagamentoController_GetQRCodeByPedidoID_Error_404_by_CreateQRCode(t *testing.T) {
+	payment := entities.Pagamento{
+		ID:        1321,
+		PedidoID:  "abc",
+		Amount:    100,
+		Status:    pagamento.StatusPagamentoIniciado,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
 	useCase := new(mocks.MockPagamentosUseCase)
-	useCase.On("CreatePayment").Return(nil, nil)
+	useCase.On("CreatePayment").Return(&payment, nil)
 	useCase.On("CreateQRCode").Return(nil, nil)
 
 	res := httptest.NewRecorder()
