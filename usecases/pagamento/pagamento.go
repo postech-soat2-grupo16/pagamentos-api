@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
+	"log"
 	"time"
 
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
@@ -53,6 +54,8 @@ func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.P
 		return nil, err
 	}
 
+	fmt.Printf("Callback do pagamento, status %s", payment.Status)
+
 	err = p.queueGateway.SendMessage(payment)
 	if err != nil {
 		fmt.Printf("Error sending payment message: %s\n", err)
@@ -78,6 +81,8 @@ func (p UseCase) CreatePayment(pedidoID string) (*entities.Pagamento, error) {
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
+
+	log.Printf("Pagamento %d Criado!\n", newPayment.ID)
 
 	return p.pagamentoGateway.CreatePayment(newPayment)
 }

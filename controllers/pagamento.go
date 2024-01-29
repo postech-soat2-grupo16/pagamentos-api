@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -45,12 +46,14 @@ func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
 			return
 		}
 
+		log.Printf("Criação de Pagamento para o Pedido %s\n", id)
 		payment, err := c.useCase.CreatePayment(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		log.Printf("Criação de QR Code para o Pedido %s\n", payment.PedidoID)
 		qrCodeStr, err := c.useCase.CreateQRCode(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,6 +65,7 @@ func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
 		qrCode := pagamento.QRCode{
 			QRCode: *qrCodeStr,
 		}
+		log.Printf("QR CODE Criado para o Pedido %s\n", payment.PedidoID)
 
 		_, err = c.useCase.UpdatePaymentStatusByPaymentID(payment.ID)
 

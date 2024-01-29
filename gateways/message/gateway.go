@@ -55,12 +55,13 @@ func (g *Gateway) SendMessage(pagamento *entities.Pagamento) error {
 		MessageBody: &stringMessage,
 	}
 
+	fmt.Printf("Enviando mensagem - Pagamento: %v", message)
 	messageResult, err := g.queue.SendMessage(message)
 	if err != nil {
 		fmt.Println("Erro ao enviar mensagem para a fila:", err)
 		return nil
 	}
-	fmt.Printf("Message result: %s\n", messageResult)
+	fmt.Printf("Mensagem enviada - Pagamento: %v", messageResult)
 
 	return nil
 }
