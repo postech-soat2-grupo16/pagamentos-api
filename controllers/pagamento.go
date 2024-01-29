@@ -53,7 +53,7 @@ func (c *PagamentoController) GetQRCodeByPedidoID() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Pagamento %d Criado com status %s\n", payment.ID, payment.Status)
+		log.Printf("Pagamento ID %d Criado com status %s\n", payment.ID, payment.Status)
 
 		log.Printf("Fazendo a criação do QR CODE para o pedido %s\n", id)
 		qrCodeStr, err := c.useCase.CreateQRCode(id)
