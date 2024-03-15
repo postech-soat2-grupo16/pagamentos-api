@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/mercadoPago"
 	"log"
 	"net/http"
 	"strconv"
@@ -22,6 +23,7 @@ func NewPagamentoController(useCase interfaces.PagamentoUseCase, r *chi.Mux) *Pa
 	r.Route("/pagamentos", func(r chi.Router) {
 		r.Get("/{idPedido}/qr-code", controller.GetQRCodeByPedidoID())
 		r.Post("/mp-webhook", controller.PaymentWebhookCreate())
+		r.Post("/mp-payment", controller.PaymentStatus())
 		r.Get("/{idPagamento}", controller.GetPaymentById())
 		r.Get("/health", controller.Health())
 	})
@@ -159,5 +161,43 @@ func (c *PagamentoController) Health() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode("OK")
+	}
+}
+
+// @Summary	Mercado Pago Payment Status
+//
+// @Tags		Payments
+//
+// @ID			mp-payment
+// @Produce	json
+// @Success	200	{object}	string
+// @Router		/pagamentos/mp-payment [post]
+func (c *PagamentoController) PaymentStatus() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var payment mercadoPago.Payment
+		err := json.NewDecoder(r.Body).Decode(&payment)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		pagamentoID, _ := strconv.ParseInt(payment.ExternalReference, 10, 32)
+		updatedPayment, err := c.useCase.ProcessPaymentStatus(uint32(pagamentoID), payment.Status)
+		if err != nil {
+			if util.IsDomainError(err) {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				json.NewEncoder(w).Encode(err)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if updatedPayment == nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(updatedPayment)
 	}
 }

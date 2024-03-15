@@ -24,7 +24,9 @@ import (
 func main() {
 	db := api.SetupDB()
 	queue := api.SetupQueue()
-	r := api.SetupRouter(db, queue)
+	notification := api.SetupNotification()
+
+	r := api.SetupRouter(db, queue, notification)
 
 	server := &http.Server{
 		Addr:              ":8000",

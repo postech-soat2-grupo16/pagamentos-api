@@ -23,3 +23,7 @@ type PagamentoGatewayI interface {
 type QueueGatewayI interface {
 	SendMessage(pagamento *entities.Pagamento) error
 }
+
+type NotificationGatewayI interface {
+	SendNotification(pagamento *entities.Pagamento) error
+}

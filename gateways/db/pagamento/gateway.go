@@ -17,7 +17,7 @@ func NewGateway(repository *gorm.DB) *Repository {
 func (p *Repository) UpdatePaymentStatusByPaymentID(pagamentoID uint32, status string) (*entities.Pagamento, error) {
 	pagamento := entities.Pagamento{
 		ID:     pagamentoID,
-		Status: status,
+		Status: entities.PagamentoStatus(status),
 	}
 	result := p.repository.Model(&pagamento).Where("id = ?", pagamentoID).Update("status", status)
 	if result.Error != nil {

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/joaocampari/postech-soat2-grupo16/gateways/message"
 	"net/http"
@@ -33,7 +34,11 @@ func SetupQueue() *sqs.SQS {
 	return external.GetSqsClient()
 }
 
-func SetupRouter(db *gorm.DB, queue *sqs.SQS) *chi.Mux {
+func SetupNotification() *sns.SNS {
+	return external.GetSnsClient()
+}
+
+func SetupRouter(db *gorm.DB, queue *sqs.SQS, notification *sns.SNS) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(commonMiddleware)
 
