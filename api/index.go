@@ -4,6 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/joaocampari/postech-soat2-grupo16/gateways/message"
+	notif "github.com/joaocampari/postech-soat2-grupo16/gateways/notification"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -42,12 +43,12 @@ func SetupRouter(db *gorm.DB, queue *sqs.SQS, notification *sns.SNS) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(commonMiddleware)
 
-	mapRoutes(r, db, queue)
+	mapRoutes(r, db, queue, notification)
 
 	return r
 }
 
-func mapRoutes(r *chi.Mux, orm *gorm.DB, queue *sqs.SQS) {
+func mapRoutes(r *chi.Mux, orm *gorm.DB, queue *sqs.SQS, notification *sns.SNS) {
 	// Swagger
 	r.Get("/swagger/*", httpSwagger.Handler())
 
@@ -55,10 +56,12 @@ func mapRoutes(r *chi.Mux, orm *gorm.DB, queue *sqs.SQS) {
 	// Gateways
 	mercadoPagoGateway := apimercadopago.NewGateway(authToken)
 	queueGateway := message.NewGateway(queue)
+	notificationGateway := notif.NewGateway(notification)
 	pedidosApiGateway := apipedido.NewGateway(albUrl)
 	pagamentoGateway := pagamentogateway.NewGateway(orm)
 	// Use cases
-	pagamentoUseCase := pagamento.NewUseCase(pagamentoGateway, mercadoPagoGateway, queueGateway, pedidosApiGateway)
+	pagamentoUseCase := pagamento.NewUseCase(pagamentoGateway, mercadoPagoGateway, queueGateway, pedidosApiGateway,
+		notificationGateway)
 	// Handlers
 	_ = controllers.NewPagamentoController(pagamentoUseCase, r)
 }

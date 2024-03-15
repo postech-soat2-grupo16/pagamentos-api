@@ -25,5 +25,5 @@ type QueueGatewayI interface {
 }
 
 type NotificationGatewayI interface {
-	SendNotification(pagamento *entities.Pagamento) error
+	SendNotification(pagamento *entities.Pagamento, email string) error
 }
