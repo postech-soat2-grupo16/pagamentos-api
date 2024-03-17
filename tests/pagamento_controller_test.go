@@ -53,6 +53,7 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreateQRCode(t *te
 	payment := entities.Pagamento{
 		ID:        1321,
 		PedidoID:  "abc",
+		ClienteID: 1,
 		Amount:    100,
 		Status:    entities.StatusPagamentoIniciado,
 		CreatedAt: time.Now(),
@@ -78,6 +79,7 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_404_by_CreateQRCode(t *te
 	payment := entities.Pagamento{
 		ID:        1321,
 		PedidoID:  "abc",
+		ClienteID: 1,
 		Amount:    100,
 		Status:    entities.StatusPagamentoIniciado,
 		CreatedAt: time.Now(),
