@@ -2,7 +2,6 @@ package tests
 
 import (
 	"errors"
-	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 	"github.com/joaocampari/postech-soat2-grupo16/controllers"
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
 	"github.com/joaocampari/postech-soat2-grupo16/interfaces/mocks"
@@ -54,8 +53,9 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_500_by_CreateQRCode(t *te
 	payment := entities.Pagamento{
 		ID:        1321,
 		PedidoID:  "abc",
+		ClienteID: 1,
 		Amount:    100,
-		Status:    pagamento.StatusPagamentoIniciado,
+		Status:    entities.StatusPagamentoIniciado,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -79,8 +79,9 @@ func TestPagamentoController_GetQRCodeByPedidoID_Error_404_by_CreateQRCode(t *te
 	payment := entities.Pagamento{
 		ID:        1321,
 		PedidoID:  "abc",
+		ClienteID: 1,
 		Amount:    100,
-		Status:    pagamento.StatusPagamentoIniciado,
+		Status:    entities.StatusPagamentoIniciado,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

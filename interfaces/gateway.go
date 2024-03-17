@@ -1,12 +1,17 @@
 package interfaces
 
 import (
+	"github.com/joaocampari/postech-soat2-grupo16/adapters/cliente"
 	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
 )
 
 type PedidoGatewayI interface {
 	GetByID(pedidoID string) (*pagamento.Pedido, error)
+}
+
+type ClienteGatewayI interface {
+	GetByID(clienteID uint32) (*cliente.Cliente, error)
 }
 
 type MercadoPagoGatewayI interface {
@@ -22,4 +27,8 @@ type PagamentoGatewayI interface {
 
 type QueueGatewayI interface {
 	SendMessage(pagamento *entities.Pagamento) error
+}
+
+type NotificationGatewayI interface {
+	SendNotification(pagamento *entities.Pagamento, email string) error
 }

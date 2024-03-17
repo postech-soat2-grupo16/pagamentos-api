@@ -9,4 +9,5 @@ type PagamentoUseCase interface {
 	UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.Pagamento, error)
 	CreatePayment(pedidoID string) (*entities.Pagamento, error)
 	GetByID(paymentID uint32) (*entities.Pagamento, error)
+	ProcessPaymentStatus(pagamentoID uint32, statusPagamento string) (*entities.Pagamento, error)
 }

@@ -79,3 +79,9 @@ variable "sqs_url" {
   default     = ""
 }
 
+variable "sns_arn" {
+  description = "SNS Pagamentos URL"
+  type        = string
+  sensitive   = true
+  default     = ""
+}

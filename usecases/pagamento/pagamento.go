@@ -3,7 +3,7 @@ package pagamento
 import (
 	"errors"
 	"fmt"
-	"github.com/joaocampari/postech-soat2-grupo16/adapters/pagamento"
+	"strconv"
 	"time"
 
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
@@ -12,20 +12,28 @@ import (
 )
 
 type UseCase struct {
-	pagamentoGateway   interfaces.PagamentoGatewayI
-	mercadoPagoGateway interfaces.MercadoPagoGatewayI
-	queueGateway       interfaces.QueueGatewayI
-	pedidoGateway      interfaces.PedidoGatewayI
+	pagamentoGateway    interfaces.PagamentoGatewayI
+	mercadoPagoGateway  interfaces.MercadoPagoGatewayI
+	queueGateway        interfaces.QueueGatewayI
+	notificationGateway interfaces.NotificationGatewayI
+	pedidoGateway       interfaces.PedidoGatewayI
+	clienteGateway      interfaces.ClienteGatewayI
 }
 
 func NewUseCase(pagamentoGateway interfaces.PagamentoGatewayI,
 	mercadoPagoGateway interfaces.MercadoPagoGatewayI,
 	queueGateway interfaces.QueueGatewayI,
-	pedidoGateway interfaces.PedidoGatewayI) UseCase {
+	notificationGateway interfaces.NotificationGatewayI,
+	pedidoGateway interfaces.PedidoGatewayI,
+	clienteGateway interfaces.ClienteGatewayI,
+) UseCase {
 	return UseCase{pagamentoGateway: pagamentoGateway,
-		mercadoPagoGateway: mercadoPagoGateway,
-		queueGateway:       queueGateway,
-		pedidoGateway:      pedidoGateway}
+		mercadoPagoGateway:  mercadoPagoGateway,
+		queueGateway:        queueGateway,
+		notificationGateway: notificationGateway,
+		pedidoGateway:       pedidoGateway,
+		clienteGateway:      clienteGateway,
+	}
 }
 
 func (p UseCase) CreateQRCode(pedidoID string) (*string, error) {
@@ -44,19 +52,21 @@ func (p UseCase) CreateQRCode(pedidoID string) (*string, error) {
 }
 
 func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.Pagamento, error) {
-	var payment, err = p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, pagamento.StatusPagamentoAprovado)
+	var statusPagamento = entities.StatusPagamentoQRCodeCriado
+
+	if pagamentoID%2 == 0 {
+		fmt.Printf("Erro ao criar QR CODE para o pagamento %d", pagamentoID)
+		statusPagamento = entities.StatusPagamentoQRCodeErro
+	}
+
+	var payment, err = p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, statusPagamento)
 	if err != nil {
 		fmt.Printf("Error updating payment status: %s\n", err)
 		return nil, err
 	}
+	fmt.Printf("Callback do QR-Code %d, status do pagamento atualizado para %s\n", payment.ID, payment.Status)
 
-	fmt.Printf("Callback do pagamento %d, status do pagamento atualizado para %s\n", payment.ID, payment.Status)
-
-	err = p.queueGateway.SendMessage(payment)
-	if err != nil {
-		fmt.Printf("Error sending payment message: %s\n", err)
-		return nil, err
-	}
+	//TODO envio da notificação SNS
 
 	return payment, nil
 }
@@ -70,10 +80,12 @@ func (p UseCase) CreatePayment(pedidoID string) (*entities.Pagamento, error) {
 		return nil, err
 	}
 
+	clienteID, _ := strconv.ParseUint(pedido.ClientID, 10, 32)
 	newPayment := entities.Pagamento{
 		PedidoID:  pedido.ID,
+		ClienteID: uint32(clienteID),
 		Amount:    pedido.GetAmount(),
-		Status:    pagamento.StatusPagamentoIniciado,
+		Status:    entities.StatusPagamentoIniciado,
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
@@ -88,4 +100,40 @@ func (p UseCase) GetByID(paymentID uint32) (*entities.Pagamento, error) {
 	}
 
 	return payment, nil
+}
+
+func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string) (*entities.Pagamento, error) {
+	pagamento, err := p.GetByID(pagamentoID)
+	if err != nil {
+		return nil, err
+	}
+
+	cliente, err := p.clienteGateway.GetByID(pagamento.ClienteID)
+	if err != nil {
+		return nil, err
+	}
+
+	updatedPayment, err := p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, statusPagamento)
+	if err != nil {
+		fmt.Printf("Error updating payment status: %s\n", err)
+		return nil, err
+	}
+
+	fmt.Printf("Atualização do status do pagamento %d, status do pagamento atualizado para %s\n", updatedPayment.ID, updatedPayment.Status)
+
+	err = p.notificationGateway.SendNotification(pagamento, cliente.Email)
+	if err != nil {
+		fmt.Printf("Error sending payment notification: %s\n", err)
+		return nil, err
+	}
+
+	if updatedPayment.IsPaymentApproved() {
+		err = p.queueGateway.SendMessage(pagamento)
+		if err != nil {
+			fmt.Printf("Error sending payment message: %s\n", err)
+			return nil, err
+		}
+	}
+
+	return pagamento, nil
 }

@@ -40,3 +40,11 @@ func (m *MockPagamentosUseCase) GetByID(paymentID uint32) (*entities.Pagamento, 
 	}
 	return args.Get(0).(*entities.Pagamento), args.Error(1)
 }
+
+func (m *MockPagamentosUseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string) (*entities.Pagamento, error) {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*entities.Pagamento), args.Error(1)
+}

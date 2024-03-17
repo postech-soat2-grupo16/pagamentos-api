@@ -4,13 +4,6 @@ import (
 	"time"
 )
 
-const (
-	// Status do pagamento
-	StatusPagamentoIniciado = "INICIADO"
-	StatusPagamentoAprovado = "APROVADO"
-	StatusPagamentoNegado   = "NEGADO"
-)
-
 type Pedido struct {
 	ID        string `json:"order_id"`
 	ClientID  string `json:"client_id"`
