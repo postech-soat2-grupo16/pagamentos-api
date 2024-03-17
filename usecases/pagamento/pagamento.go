@@ -14,20 +14,24 @@ type UseCase struct {
 	pagamentoGateway    interfaces.PagamentoGatewayI
 	mercadoPagoGateway  interfaces.MercadoPagoGatewayI
 	queueGateway        interfaces.QueueGatewayI
-	pedidoGateway       interfaces.PedidoGatewayI
 	notificationGateway interfaces.NotificationGatewayI
+	pedidoGateway       interfaces.PedidoGatewayI
+	clienteGateway      interfaces.ClienteGatewayI
 }
 
 func NewUseCase(pagamentoGateway interfaces.PagamentoGatewayI,
 	mercadoPagoGateway interfaces.MercadoPagoGatewayI,
 	queueGateway interfaces.QueueGatewayI,
+	notificationGateway interfaces.NotificationGatewayI,
 	pedidoGateway interfaces.PedidoGatewayI,
-	notificationGateway interfaces.NotificationGatewayI) UseCase {
+	clienteGateway interfaces.ClienteGatewayI,
+) UseCase {
 	return UseCase{pagamentoGateway: pagamentoGateway,
 		mercadoPagoGateway:  mercadoPagoGateway,
 		queueGateway:        queueGateway,
-		pedidoGateway:       pedidoGateway,
 		notificationGateway: notificationGateway,
+		pedidoGateway:       pedidoGateway,
+		clienteGateway:      clienteGateway,
 	}
 }
 
