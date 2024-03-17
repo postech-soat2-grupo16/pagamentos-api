@@ -40,7 +40,7 @@ func NewGatewayMock() *GatewayMock {
 
 func (g *Gateway) SendNotification(pagamento *entities.Pagamento, email string) error {
 
-	notificationMessage := fmt.Sprintf("Status do Pagamento %d atualizado para %s", pagamento.ID, pagamento.Status)
+	notificationMessage := fmt.Sprintf("Fastfood API - Status do Pagamento %d atualizado para %s", pagamento.ID, pagamento.Status)
 	fmt.Printf("Sending message: %s\n", notificationMessage)
 
 	//Build message
