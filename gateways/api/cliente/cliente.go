@@ -18,7 +18,7 @@ func NewGateway(apiURL string) *ClientesAPIRepository {
 }
 
 func (p *ClientesAPIRepository) GetByID(clienteID uint32) (*cliente.Cliente, error) {
-	url := fmt.Sprintf("%s%s%s", p.ApiURL, "/clientes/", clienteID)
+	url := fmt.Sprintf("%s%s%d", p.ApiURL, "/clientes/", clienteID)
 
 	resp, err := http.Get(url)
 	if err != nil {
