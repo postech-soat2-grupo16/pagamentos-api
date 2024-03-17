@@ -19,7 +19,7 @@ func GetSqsClient() *sqs.SQS {
 	}
 
 	sqsClient := sqs.New(session.Must(session.NewSession(awsConfig)))
-	fmt.Printf("sqs client connected: %v\n", sqsClient.Client)
+	fmt.Printf("sqs client connected: %v\n", sqsClient.ClientInfo)
 
 	return sqsClient
 }
