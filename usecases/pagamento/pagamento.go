@@ -3,6 +3,7 @@ package pagamento
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/joaocampari/postech-soat2-grupo16/entities"
@@ -79,8 +80,10 @@ func (p UseCase) CreatePayment(pedidoID string) (*entities.Pagamento, error) {
 		return nil, err
 	}
 
+	clienteID, _ := strconv.ParseUint(pedido.ClientID, 10, 32)
 	newPayment := entities.Pagamento{
 		PedidoID:  pedido.ID,
+		ClienteID: uint32(clienteID),
 		Amount:    pedido.GetAmount(),
 		Status:    entities.StatusPagamentoIniciado,
 		CreatedAt: time.Time{},
@@ -100,7 +103,12 @@ func (p UseCase) GetByID(paymentID uint32) (*entities.Pagamento, error) {
 }
 
 func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string) (*entities.Pagamento, error) {
-	payment, err := p.GetByID(pagamentoID)
+	pagamento, err := p.GetByID(pagamentoID)
+	if err != nil {
+		return nil, err
+	}
+
+	cliente, err := p.clienteGateway.GetByID(pagamento.ClienteID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,13 +121,19 @@ func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string
 
 	fmt.Printf("Atualização do status do pagamento %d, status do pagamento atualizado para %s\n", updatedPayment.ID, updatedPayment.Status)
 
-	//TODO envio da notificação SNS
-
-	err = p.queueGateway.SendMessage(payment)
+	err = p.notificationGateway.SendNotification(pagamento, cliente.Email)
 	if err != nil {
-		fmt.Printf("Error sending payment message: %s\n", err)
+		fmt.Printf("Error sending payment notification: %s\n", err)
 		return nil, err
 	}
 
-	return payment, nil
+	if updatedPayment.IsPaymentApproved() {
+		err = p.queueGateway.SendMessage(pagamento)
+		if err != nil {
+			fmt.Printf("Error sending payment message: %s\n", err)
+			return nil, err
+		}
+	}
+
+	return pagamento, nil
 }

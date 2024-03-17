@@ -10,8 +10,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/joaocampari/postech-soat2-grupo16/controllers"
 	"github.com/joaocampari/postech-soat2-grupo16/external"
+	apicliente "github.com/joaocampari/postech-soat2-grupo16/gateways/api/cliente"
 	apimercadopago "github.com/joaocampari/postech-soat2-grupo16/gateways/api/mercadopago"
 	apipedido "github.com/joaocampari/postech-soat2-grupo16/gateways/api/pedido"
+
 	pagamentogateway "github.com/joaocampari/postech-soat2-grupo16/gateways/db/pagamento"
 	"github.com/joaocampari/postech-soat2-grupo16/usecases/pagamento"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -59,9 +61,10 @@ func mapRoutes(r *chi.Mux, orm *gorm.DB, queue *sqs.SQS, notification *sns.SNS) 
 	notificationGateway := notif.NewGateway(notification)
 	pedidosApiGateway := apipedido.NewGateway(albUrl)
 	pagamentoGateway := pagamentogateway.NewGateway(orm)
+	clienteGateway := apicliente.NewGateway(albUrl)
 	// Use cases
-	pagamentoUseCase := pagamento.NewUseCase(pagamentoGateway, mercadoPagoGateway, queueGateway, pedidosApiGateway,
-		notificationGateway)
+	pagamentoUseCase := pagamento.NewUseCase(pagamentoGateway, mercadoPagoGateway, queueGateway, notificationGateway,
+		pedidosApiGateway, clienteGateway)
 	// Handlers
 	_ = controllers.NewPagamentoController(pagamentoUseCase, r)
 }
