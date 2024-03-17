@@ -68,6 +68,16 @@ func (p UseCase) UpdatePaymentStatusByPaymentID(pagamentoID uint32) (*entities.P
 
 	//TODO envio da notificação SNS
 
+	cliente, err := p.clienteGateway.GetByID(payment.ClienteID)
+	if err != nil {
+		return nil, err
+	}
+	err = p.notificationGateway.SendNotification(payment, cliente.Email)
+	if err != nil {
+		fmt.Printf("Error sending payment notification: %s\n", err)
+		return nil, err
+	}
+
 	return payment, nil
 }
 
@@ -128,6 +138,7 @@ func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string
 	}
 
 	if updatedPayment.IsPaymentApproved() && err == nil {
+		fmt.Printf("Pagamento %d aprovado, enviando MSG", pagamento.ID)
 		err = p.queueGateway.SendMessage(pagamento)
 		if err != nil {
 			fmt.Printf("Error sending payment message: %s\n", err)

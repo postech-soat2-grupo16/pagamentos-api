@@ -44,21 +44,19 @@ func (g *Gateway) SendNotification(pagamento *entities.Pagamento, email string) 
 	fmt.Printf("Sending message: %s\n", notificationMessage)
 
 	//Build message
-	//TODO: Adicionar o envio a apenas 1 email (destino)
 	message := &sns.PublishInput{
-		TopicArn:  &g.notificationTopic,
 		Message:   &notificationMessage,
 		TargetArn: aws.String(fmt.Sprintf("%s:endpoint/email/%s", os.Getenv("NOTIFICATION_TOPIC"), email)),
 		Subject:   aws.String("Subject of the message"),
 	}
 
-	fmt.Printf("Enviando mensagem de Notificação de pagamento ID %d\n", pagamento.ID)
+	fmt.Printf("Enviando Notificação de pagamento ID %d\n", pagamento.ID)
 	messageResult, err := g.notification.Publish(message)
 	if err != nil {
 		fmt.Println("Erro ao enviar mensagem para a fila:", err)
 		return nil
 	}
-	fmt.Printf("Mensagem de Notificação de pagamento ID %d enviada com sucesso: %v\n", pagamento.ID, messageResult)
+	fmt.Printf("Notificação de pagamento ID %d enviada com sucesso: %v\n", pagamento.ID, messageResult)
 
 	return nil
 }
