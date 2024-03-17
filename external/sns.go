@@ -19,7 +19,7 @@ func GetSnsClient() *sns.SNS {
 	}
 
 	snsClient := sns.New(session.Must(session.NewSession(awsConfig)))
-	fmt.Printf("SNS client connected: %v\n", *snsClient)
+	fmt.Printf("SNS client connected: %v\n", snsClient)
 
 	return snsClient
 }

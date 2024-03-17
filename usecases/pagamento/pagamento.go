@@ -127,7 +127,7 @@ func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string
 		return nil, err
 	}
 
-	if updatedPayment.IsPaymentApproved() {
+	if updatedPayment.IsPaymentApproved() && err == nil {
 		err = p.queueGateway.SendMessage(pagamento)
 		if err != nil {
 			fmt.Printf("Error sending payment message: %s\n", err)
