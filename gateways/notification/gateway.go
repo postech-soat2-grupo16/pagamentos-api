@@ -45,10 +45,15 @@ func (g *Gateway) SendNotification(pagamento *entities.Pagamento, email string) 
 
 	//Build message
 	message := &sns.PublishInput{
-		Message:   &notificationMessage,
-		TargetArn: aws.String(fmt.Sprintf("%s:endpoint/email/%s", os.Getenv("NOTIFICATION_TOPIC"), email)),
-		Subject:   aws.String("Subject of the message"),
-	}
+		TopicArn: &g.notificationTopic,
+		Subject:  aws.String(fmt.Sprintf("Status do Pagamento %d", pagamento.ID)),
+		Message:  &notificationMessage,
+		MessageAttributes: map[string]*sns.MessageAttributeValue{
+			"target": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(email),
+			},
+		}}
 
 	fmt.Printf("Enviando Notificação de pagamento ID %d\n", pagamento.ID)
 	messageResult, err := g.notification.Publish(message)
