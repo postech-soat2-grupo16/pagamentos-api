@@ -125,20 +125,20 @@ func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string
 
 	updatedPayment, err := p.pagamentoGateway.UpdatePaymentStatusByPaymentID(pagamentoID, statusPagamento)
 	if err != nil {
-		fmt.Printf("Error updating payment status: %s\n", err)
+		fmt.Printf("Error updating payment id %d status: %s\n", pagamento.ID, err)
 		return nil, err
 	}
 
 	fmt.Printf("Atualização do status do pagamento %d, status do pagamento atualizado para %s\n", updatedPayment.ID, updatedPayment.Status)
 
-	err = p.notificationGateway.SendNotification(pagamento, cliente.Email)
+	err = p.notificationGateway.SendNotification(updatedPayment, cliente.Email)
 	if err != nil {
 		fmt.Printf("Error sending payment notification: %s\n", err)
 		return nil, err
 	}
 
 	if updatedPayment.IsPaymentApproved() && err == nil {
-		fmt.Printf("Pagamento %d aprovado, enviando MSG", pagamento.ID)
+		fmt.Printf("Pagamento %d aprovado, enviando MSG", updatedPayment.ID)
 		err = p.queueGateway.SendMessage(pagamento)
 		if err != nil {
 			fmt.Printf("Error sending payment message: %s\n", err)
@@ -146,5 +146,5 @@ func (p UseCase) ProcessPaymentStatus(pagamentoID uint32, statusPagamento string
 		}
 	}
 
-	return pagamento, nil
+	return updatedPayment, nil
 }
